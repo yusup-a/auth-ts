@@ -1,0 +1,12 @@
+# dependencies
+/node_modules
+
+# build
+/dist
+
+# env & uploads
+.env
+/uploads
+
+# misc
+.DS_Store

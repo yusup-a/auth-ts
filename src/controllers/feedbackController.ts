@@ -1,22 +1,31 @@
 import { Request, Response } from "express";
-import { Feedback } from "../models/Feedback";
-
+import { GeneralFeedbackModel } from "../models/Feedback";
 
 export const createFeedback = async (req: Request, res: Response) => {
-    const { message } = req.body;
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    if (!message) return res.status(400).json({ message: "message is required" });
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
+  const { title, description } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({ message: "title and description are required" });
+  }
 
-    const imageUrl = req.file ? `/${process.env.UPLOAD_DIR || "uploads"}/${req.file.filename}` : undefined;
+  const files = (req.files as Express.Multer.File[]) || [];
+  const base = `/${process.env.UPLOAD_DIR || "uploads"}`;
+  const images = files.map((f) => `${base}/${f.filename}`);
 
+  const doc = await GeneralFeedbackModel.create({
+    title,
+    description,
+    images,
+    submittedBy: (req.user as any)._id,
+  });
 
-    const doc = await Feedback.create({ message, imageUrl, user: (req.user as any)._id || req.user._id });
-    res.status(201).json(doc);
+  res.status(201).json(doc);
 };
 
-
 export const listFeedback = async (_req: Request, res: Response) => {
-    const docs = await Feedback.find().sort({ createdAt: -1 }).populate("user", "name email");
-    res.json(docs);
+  const docs = await GeneralFeedbackModel.find()
+    .sort({ createdAt: -1 })
+    .populate("submittedBy", "username email");
+  res.json(docs);
 };

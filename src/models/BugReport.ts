@@ -1,20 +1,28 @@
-import { Schema, model, Types } from "mongoose";
+import { getModelForClass, prop, Ref, modelOptions } from "@typegoose/typegoose";
+import { UserClass } from "./User";
 
+@modelOptions({ schemaOptions: { timestamps: true } })
+export class BugReportClass {
+  @prop({ required: true })
+  public title!: string;
 
-export interface IBugReport {
-    title: string;
-    description: string;
-    imageUrl?: string;
-    user: Types.ObjectId;
+  @prop({ required: true })
+  public description!: string;
+
+  @prop({ type: () => [String], default: [] })
+  public images!: string[];
+
+  @prop({ required: true, enum: ["Low", "Medium", "High"] })
+  public priority!: "Low" | "Medium" | "High";
+
+  @prop()
+  public browser?: string;
+
+  @prop()
+  public reproducibleSteps?: string;
+
+  @prop({ ref: () => UserClass, required: true })
+  public submittedBy!: Ref<UserClass>;
 }
 
-
-const bugSchema = new Schema<IBugReport>({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    imageUrl: { type: String },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true }
-}, { timestamps: true });
-
-
-export const BugReport = model<IBugReport>("BugReport", bugSchema);
+export const BugReportModel = getModelForClass(BugReportClass);

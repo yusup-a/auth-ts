@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@slack/web-api": "^7.10.0",
     "@typegoose/typegoose": "^12.19.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",

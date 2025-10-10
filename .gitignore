@@ -1,12 +1,12 @@
 # dependencies
-/node_modules
+node_modules/
+dist/
 
-# build
-/dist
-
-# env & uploads
+# local env files
 .env
-/uploads
 
-# misc
-.DS_Store
+# logs
+*.log
+
+# uploads folder (optional)
+uploads/

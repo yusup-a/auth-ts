@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BugReportModel } from "../models/BugReport";
+import { notifySlack } from "../config/slack";
 
 export const createBug = async (req: Request, res: Response) => {
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
@@ -23,12 +24,19 @@ export const createBug = async (req: Request, res: Response) => {
     submittedBy: (req.user as any)._id,
   });
 
+  // Fire-and-forget Slack notification
+  const u = req.user as any;
+  notifySlack("bug", {
+    title: doc.title,
+    description: doc.description,
+    priority: doc.priority,
+    user: { username: u?.username, email: u?.email },
+  }).catch((err) => console.warn("Slack bug notify error:", err.message));
+
   res.status(201).json(doc);
 };
 
 export const listBugs = async (_req: Request, res: Response) => {
-  const docs = await BugReportModel.find()
-    .sort({ createdAt: -1 })
-    .populate("submittedBy", "username email");
+  const docs = await BugReportModel.find().sort({ createdAt: -1 }).populate("submittedBy", "username email");
   res.json(docs);
 };

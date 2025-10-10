@@ -6,8 +6,10 @@ import { createBug, listBugs } from "../controllers/bugReportController";
 
 const router = Router();
 
-// allow up to 5 images: form-data field name must be "images"
+// POST /api/bugs  (create bug report, authenticated)
 router.post("/bugs", protect, upload.array("images", 5), asyncHandler(createBug));
+
+// GET /api/bugs  (list all bug reports)
 router.get("/bugs", asyncHandler(listBugs));
 
 export default router;

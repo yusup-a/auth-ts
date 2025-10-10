@@ -1,8 +1,6 @@
-import { getModelForClass, prop, modelOptions, index } from "@typegoose/typegoose";
+import { getModelForClass, prop, modelOptions } from "@typegoose/typegoose";
 
 @modelOptions({ schemaOptions: { timestamps: true } })
-@index({ username: 1 }, { unique: true })
-@index({ email: 1 }, { unique: true })
 export class UserClass {
   @prop({ required: true, unique: true })
   public username!: string;

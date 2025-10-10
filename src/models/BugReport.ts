@@ -1,7 +1,7 @@
 import { getModelForClass, prop, Ref, modelOptions } from "@typegoose/typegoose";
 import { UserClass } from "./User";
 
-@modelOptions({ schemaOptions: { timestamps: true } })
+@modelOptions({ schemaOptions: { timestamps: true, collection: "bugreports" } })
 export class BugReportClass {
   @prop({ required: true })
   public title!: string;

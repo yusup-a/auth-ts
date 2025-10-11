@@ -8,7 +8,6 @@ const TempSchema = new mongoose.Schema(
   { collection: "selftest_temp" }
 );
 const TempModel = mongoose.model("SelfTestTemp", TempSchema);
-const uri = 'mongodb+srv://kvharini191981_db_user:b71aY4O1kT4iAqS0@mongodbcluster.c6i2irl.mongodb.net/'; 
 
 async function main() {
   logger.info("DB self-test starting…");
@@ -16,7 +15,6 @@ async function main() {
   if (!process.env.MONGO_URI) {
     logger.warn("MONGO_URI not set; test will fail intentionally.");
   }
-  process.env.MONGODB_URI = uri; // Set the environment variable for the test
 
   await connectDB();
 

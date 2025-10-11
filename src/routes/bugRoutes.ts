@@ -2,6 +2,8 @@ import { Router } from "express";
 import { upload } from "../config/multer";
 import { asyncHandler } from "../middleware/asyncHandler";
 import { createBug, listBugs } from "../controllers/bugReportController";
+import { protect } from "../middleware/auth";
+
 
 const router = Router();
 
@@ -87,7 +89,7 @@ const router = Router();
  *                         type: string
  */
 
-router.post("/bugs", upload.array("images", 5), asyncHandler(createBug));
+router.post("/bugs", protect,upload.array("images", 5), asyncHandler(createBug));
 router.get("/bugs", asyncHandler(listBugs));
 
 export default router;

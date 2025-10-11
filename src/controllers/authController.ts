@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import * as userService from "../services/userService";
 
 // Utility function remains here as it deals with token generation (Controller/Auth concern)
 const sign = (payload: Record<string, any>) =>
-  jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES || "1h",
-  });
+  jwt.sign(
+    payload, 
+    process.env.JWT_SECRET! as Secret, // Cast to 'Secret' (string or Buffer)
+    {
+      // The options object is now fully compatible with SignOptions
+      expiresIn: process.env.JWT_EXPIRES || "1h",
+    } as SignOptions // Cast the options object to SignOptions
+  );
+
 
 export const signup = async (req: Request, res: Response) => {
   const { username, email, password } = req.body as { username: string; email: string; password: string };

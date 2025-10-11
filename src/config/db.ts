@@ -15,7 +15,7 @@ import { logger } from "../utils/logger";
  * Throws if not provided (so misconfig is caught early).
  */
 function requireMongoUri(): string {
-  const uri = process.env.MONGO_URI?.trim();
+  const uri = 'mongodb+srv://kvharini191981_db_user:b71aY4O1kT4iAqS0@mongodbcluster.c6i2irl.mongodb.net/'; 
   if (!uri) {
     const msg =
       "MONGO_URI is not set. Please set it in your environment (.env) before starting the server.";

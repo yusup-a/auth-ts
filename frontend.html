@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feedback & Bug Reporting Demo</title>
+    <style>
+        :root { --bg:#0b0c10; --panel:#151821; --muted:#8b93a7; --fg:#e6e9f2; --accent:#7c5cff; --ok:#22c55e; --err:#ef4444; }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:system-ui,Segoe UI,Roboto,Inter,Arial;background:linear-gradient(180deg,#0b0c10,#0e1118);color:var(--fg)}
+        .screen{display:none;padding:30px;max-width:720px;margin:0 auto}
+        .active{display:block}
+        h1{margin:0 0 10px}
+        label{display:block;margin-top:12px;font-size:13px;color:#aab2c8}
+        input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #2b3044;background:#0f1220;color:var(--fg);outline:none}
+        textarea{resize:vertical;min-height:110px}
+        .row{display:grid;gap:12px}
+        .row.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+        @media (max-width:720px){.row.cols-2{grid-template-columns:1fr}}
+        .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+        button{padding:10px 14px;border-radius:12px;border:1px solid #2b3044;background:#171b2c;color:#dfe4f7;cursor:pointer;font-weight:700}
+        button.primary{background:linear-gradient(135deg,var(--accent),#4f46e5);color:#fff;border-color:#5b61ff}
+        button.ghost{background:transparent}
+        .card{background:#151821;border:1px solid #262b41;border-radius:14px;padding:18px;margin-top:16px}
+        .muted{color:var(--muted);font-size:12px}
+        .status{font-size:13px;margin-top:8px}
+        .ok{color:var(--ok)} .err{color:var(--err)}
+        .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:#0f1220;border:1px solid #2b3044;color:#e6f8ee;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s}
+        .toast.show{opacity:1}
+    </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="screen active">
+    <div class="topbar">
+        <h1>Login / Sign Up</h1>
+    </div>
+
+    <div class="row cols-2">
+        <div>
+            <label>Username</label>
+            <input id="authUsername" placeholder="demo" />
+        </div>
+        <div>
+            <label>Email</label>
+            <input id="authEmail" placeholder="demo@example.com" />
+        </div>
+    </div>
+    <label>Password</label>
+    <input id="authPassword" type="password" placeholder="Passw0rd!" />
+
+    <div class="buttons">
+        <button class="primary" id="signupBtn">Sign Up</button>
+        <button id="loginBtn">Log In</button>
+    </div>
+    <div id="authStatus" class="status"></div>
+</div>
+
+<!-- MAIN SCREEN -->
+<div id="mainScreen" class="screen">
+    <div class="topbar">
+        <h1>Submit a Report</h1>
+        <div class="buttons">
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="primary" onclick="openForm('bugForm')"> Bug Report</button>
+        <button class="primary" onclick="openForm('featureForm')"> Feature Request</button>
+        <button class="primary" onclick="openForm('feedbackForm')"> Feedback</button>
+    </div>
+
+    <!-- BUG FORM -->
+    <div id="bugForm" class="card" style="display:none">
+        <h3>Bug Report</h3>
+        <div class="row cols-2">
+            <div><label>Title *</label><input id="bug_title" /></div>
+            <div>
+                <label>Priority *</label>
+                <select id="bug_priority"><option>Low</option><option>Medium</option><option selected>High</option></select>
+            </div>
+        </div>
+        <label>Description *</label><textarea id="bug_description"></textarea>
+        <div class="row cols-2">
+            <div><label>Browser</label><input id="bug_browser" placeholder="Chrome / Firefox / Safari" /></div>
+            <div><label>Reproducible Steps</label><input id="bug_steps" placeholder="Open app → click X → crash" /></div>
+        </div>
+        <label>Screenshots</label><input id="bug_images" type="file" multiple accept="image/*" />
+        <div class="buttons">
+            <button class="primary" id="bugSubmit">Submit Bug</button>
+            <button class="ghost" onclick="closeForm('bugForm')">Close</button>
+        </div>
+        <div id="bugStatus" class="status"></div>
+    </div>
+
+    <!-- FEATURE FORM -->
+    <div id="featureForm" class="card" style="display:none">
+        <h3>Feature Request</h3>
+        <div class="row cols-2">
+            <div><label>Title *</label><input id="ft_title" /></div>
+            <div>
+                <label>Priority *</label>
+                <select id="ft_priority"><option>Nice-to-have</option><option selected>Important</option><option>Critical</option></select>
+            </div>
+        </div>
+        <label>Description *</label><textarea id="ft_description"></textarea>
+        <div class="row cols-2">
+            <div><label>Target Audience</label><input id="ft_audience" placeholder="End Users / Developers" /></div>
+            <div><label>Expected Benefit</label><input id="ft_benefit" placeholder="e.g., Less eye strain" /></div>
+        </div>
+        <label>Screenshots</label><input id="ft_images" type="file" multiple accept="image/*" />
+        <div class="buttons">
+            <button class="primary" id="ftSubmit">Submit Feature</button>
+            <button class="ghost" onclick="closeForm('featureForm')">Close</button>
+        </div>
+        <div id="ftStatus" class="status"></div>
+    </div>
+
+    <!-- FEEDBACK FORM -->
+    <div id="feedbackForm" class="card" style="display:none">
+        <h3>General Feedback</h3>
+        <label>Title *</label><input id="fb_title" />
+        <label>Description *</label><textarea id="fb_description"></textarea>
+        <label>Images</label><input id="fb_images" type="file" multiple accept="image/*" />
+        <div class="buttons">
+            <button class="primary" id="fbSubmit">Submit Feedback</button>
+            <button class="ghost" onclick="closeForm('feedbackForm')">Close</button>
+        </div>
+        <div id="fbStatus" class="status"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast">Submitted ✓ — check Slack</div>
+
+<script>
+    // --- Small helpers ---
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg) => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800); };
+    const setStatus = (id, ok, msg) => { const el=$(id); el.className='status ' + (ok?'ok':'err'); el.textContent = msg; };
+
+    // Fixed API base URL (no user input)
+    const BASE_URL = "http://localhost:4000";
+    let token = localStorage.getItem('demo_token') || "";
+
+    function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+    function openForm(id){ closeAllForms(); $(id).style.display='block'; }
+    function closeForm(id){ $(id).style.display='none'; }
+    function closeAllForms(){ ['bugForm','featureForm','feedbackForm'].forEach(i=>$(i).style.display='none'); }
+
+    function logout(){
+      token = "";
+      localStorage.removeItem('demo_token');
+      showScreen('authScreen');
+    }
+    $('logoutBtn').onclick = logout;
+
+    async function api(path, opts={}){
+      const headers = opts.headers || {};
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      const res = await fetch(BASE_URL + path, { ...opts, headers });
+      const data = await res.json().catch(()=> ({}));
+      return { ok: res.ok, status: res.status, data };
+    }
+
+    // --- Auth actions ---
+    $('signupBtn').onclick = async () => {
+      setStatus('authStatus', true, 'Signing up...');
+      const body = {
+        username: $('authUsername').value.trim(),
+        email: $('authEmail').value.trim(),
+        password: $('authPassword').value
+      };
+      const r = await api('/api/auth/signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      if (r.ok) {
+        token = r.data.token; localStorage.setItem('demo_token', token);
+        setStatus('authStatus', true, 'Signed up ✔');
+        showScreen('mainScreen');
+        toast('Signed up — you can submit now');
+      } else {
+        setStatus('authStatus', false, r.data.message || 'Signup failed');
+      }
+    };
+
+    $('loginBtn').onclick = async () => {
+      setStatus('authStatus', true, 'Logging in...');
+      const body = { email: $('authEmail').value.trim(), password: $('authPassword').value };
+      const r = await api('/api/auth/login', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      if (r.ok) {
+        token = r.data.token; localStorage.setItem('demo_token', token);
+        setStatus('authStatus', true, 'Logged in ✔');
+        showScreen('mainScreen');
+        toast('Logged in — you can submit now');
+      } else {
+        setStatus('authStatus', false, r.data.message || 'Login failed');
+      }
+    };
+
+    // --- Submit helpers ---
+    async function submitForm(path, fields, files, statusId){
+      const fd = new FormData();
+      Object.entries(fields).forEach(([k,v]) => v!=null && v!=='' && fd.append(k,v));
+      (files||[]).forEach(f => fd.append('images', f));
+      const r = await api(path, { method:'POST', body: fd });
+      if (r.ok){
+        setStatus(statusId, true, 'Submitted ✓ — check Slack');
+        toast('Submitted ✓ — check Slack');
+      } else {
+        setStatus(statusId, false, r.data.message || 'Submit failed');
+      }
+    }
+
+    // Bug submit
+    $('bugSubmit').onclick = () => submitForm('/api/bugs', {
+      title: $('bug_title').value,
+      description: $('bug_description').value,
+      priority: $('bug_priority').value,
+      browser: $('bug_browser').value,
+      reproducibleSteps: $('bug_steps').value
+    }, Array.from(($('bug_images').files||[])), 'bugStatus');
+
+    // Feature submit
+    $('ftSubmit').onclick = () => submitForm('/api/features', {
+      title: $('ft_title').value,
+      description: $('ft_description').value,
+      priority: $('ft_priority').value,
+      targetAudience: $('ft_audience').value,
+      expectedBenefit: $('ft_benefit').value
+    }, Array.from(($('ft_images').files||[])), 'ftStatus');
+
+    // Feedback submit
+    $('fbSubmit').onclick = () => submitForm('/api/feedback', {
+      title: $('fb_title').value,
+      description: $('fb_description').value
+    }, Array.from(($('fb_images').files||[])), 'fbStatus');
+
+    // Restore session if token exists
+    if (token) showScreen('mainScreen');
+</script>
+</body>
+</html>

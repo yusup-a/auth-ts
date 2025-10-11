@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as feedbackService from "../services/feedbackService";
-import { Express } from "express"; 
+import { notifySlack } from "../config/slack";
 
 // NOTE: Relying on global module augmentation (e.g., in src/types/express.d.ts)
 // to correctly include req.user and req.files on the Request type.
@@ -39,6 +39,14 @@ export const createFeedback = async (req: Request, res: Response) => {
 
     // 3. Call Service Layer to create the document
     const doc = await feedbackService.createGeneralFeedback(feedbackData);
+      const u = req.user as any;
+  notifySlack("feedback", {
+    title: doc.title,
+    description: doc.description,
+    user: { username: u?.username, email: u?.email },
+  }).catch((err) => console.warn("Slack feedback notify error:", err.message));
+
+  res.status(201).json(doc);
 
     // 4. Respond
     res.status(201).json(doc);
@@ -46,7 +54,7 @@ export const createFeedback = async (req: Request, res: Response) => {
     console.error("Error creating feedback:", error);
     res.status(500).json({ message: "Failed to create feedback." });
   }
-};
+}
 
 /**
  * GET /api/feedback

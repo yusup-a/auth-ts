@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as bugReportService from "../services/bugReportService";
-// NOTE: We rely on a global declaration file (e.g., src/types/express.d.ts) 
-// to correctly augment the 'Request' type with 'user' and 'files'.
+import { BugReportModel } from "../models/BugReport";
+import { notifySlack } from "../config/slack";
+
 
 /**
  * POST /api/bugs
@@ -22,23 +22,24 @@ export const createBug = async (req: Request, res: Response) => {
     const base = `/${process.env.UPLOAD_DIR || "uploads"}`;
     const images = files.map((f) => `${base}/${f.filename}`);
 
-    // 2. Prepare data object for service
-    const reportData: bugReportService.CreateBugReportData = {
-      title,
-      description,
-      images,
-      priority,
-      browser,
-      reproducibleSteps,
-      // TypeScript now recognizes req.user (from Auth Middleware)
-      // We cast req.user to any temporarily for the conditional spreading, 
-      // though the augmented type should handle this if configured well.
-      ...(req.user ? { submittedBy: (req.user as any)._id } : {}), 
-    };
+  const doc = await BugReportModel.create({
+    title,
+    description,
+    images,
+    priority,
+    browser,
+    reproducibleSteps,
+    submittedBy: (req.user as any)._id,
+  });
 
-    // 3. Call Service Layer
-    const doc = await bugReportService.createBugReport(reportData);
-
+  const u = req.user as any;
+  notifySlack("bug", {
+    title: doc.title,
+    description: doc.description,
+    priority: doc.priority,
+    user: { username: u?.username, email: u?.email },
+  }).catch((err) => console.warn("Slack bug notify error:", err.message));
+  
     // 4. Respond
     res.status(201).json(doc);
   } catch (error) {
@@ -52,17 +53,14 @@ export const createBug = async (req: Request, res: Response) => {
  * Lists all bug reports.
  */
 export const listBugs = async (_req: Request, res: Response) => {
-  try {
-    // 1. Call Service Layer
-    const docs = await bugReportService.listBugReports();
-
-    // 2. Respond
-    res.json(docs);
-  } catch (error) {
-    console.error("Error listing bug reports:", error);
-    res.status(500).json({ message: "Failed to list bug reports." });
-  }
+  const docs = await BugReportModel.find()
+    .sort({ createdAt: -1 })
+    .populate("submittedBy", "username email");
+  res.json(docs);
 };
 
 // You would add other controller functions here (e.g., getBugById, updateBug, deleteBug)
 // using the corresponding service functions.
+
+// Fire-and-forget Slack notification
+

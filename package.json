@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:test": "ts-node-dev --transpile-only src/scripts/dbSelfTest.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@slack/web-api": "^7.10.0",
     "@typegoose/typegoose": "^12.19.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",

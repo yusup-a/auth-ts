@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as featureRequestService from "../services/featureRequestService";
+import { notifySlack } from "../config/slack";
 
 // NOTE: Using 'Request' and relying on global module augmentation 
 // (e.g., in src/types/express.d.ts) to include req.user and req.files.
@@ -41,7 +42,15 @@ export const createFeature = async (req: Request, res: Response) => {
 
     // 3. Call Service Layer to create the document
     const doc = await featureRequestService.createFeatureRequest(requestData);
+      const u = req.user as any;
+    notifySlack("feature", {
+    title: doc.title,
+    description: doc.description,
+    priority: doc.priority,
+    user: { username: u?.username, email: u?.email },
+  }).catch((err) => console.warn("Slack feature notify error:", err.message));
 
+  res.status(201).json(doc);
     // 4. Respond
     res.status(201).json(doc);
   } catch (error) {

@@ -1,0 +1,141 @@
+type: collection.insomnia.rest/5.0
+name: My first collection
+meta:
+  id: wrk_6b5a8d4a4c194648b294abb4c9960c97
+  created: 1760213364734
+  modified: 1760213364734
+  description: ""
+collection:
+  - url: http://localhost:3000/api/auth/login
+    name: Feedback Auth login request
+    meta:
+      id: req_a7b343d828624f65ac92bbdc59408e1b
+      created: 1760213364896
+      modified: 1760213811572
+      isPrivate: false
+      description: ""
+      sortKey: -1760213364896
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "email": "kd.donthi@gmail.com",
+          "password": "khushi12"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.6.1
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:4000/api/auth/signup
+    name: Feedback Auth sign up request
+    meta:
+      id: req_7be4e513e24d4257ab1b669629c5e290
+      created: 1760213497056
+      modified: 1760213835106
+      isPrivate: false
+      description: ""
+      sortKey: -1760213497056
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "username": "khushi",
+          "email": "kd.donthi@gmail.com",
+          "password": "khushi12"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.6.1
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:4000/api/bugs
+    name: Feedback Get bug reports
+    meta:
+      id: req_8316d3448e7c4f3caafcaf6d4bdba1e5
+      created: 1760213697773
+      modified: 1760213854652
+      isPrivate: false
+      description: ""
+      sortKey: -1760213697773
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/11.6.1
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:4000/api/bugs
+    name: Feedback Create new bug
+    meta:
+      id: req_f241391ea09044cd98f6525c0aa3d112
+      created: 1760214377925
+      modified: 1760216829732
+      isPrivate: false
+      description: ""
+      sortKey: -1760214377925
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "title": "App crashes on save",
+          "description": "The app crashes when clicking Save in Chrome 118.",
+          "images": [],
+          "priority": "Low",
+          "browser": "Chrome 118",
+          "reproducibleSteps": "1. Open the app, 2. Click Save",
+          "_id": "68eac6e74e933cd855ee628e",
+          "createdAt": "2025-10-11T21:06:47.251Z",
+          "updatedAt": "2025-10-11T21:06:47.251Z",
+          "__v": 0
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.6.1
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_bc7705a5cffa6522f6f77ef8a52463fde3638b33
+    created: 1760213364788
+    modified: 1760213364788
+environments:
+  name: Base Environment
+  meta:
+    id: env_bc7705a5cffa6522f6f77ef8a52463fde3638b33
+    created: 1760213364784
+    modified: 1760213364784
+    isPrivate: false
